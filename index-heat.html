@@ -1,0 +1,96 @@
+﻿<html>
+<head>
+	<title>Дома Москвы</title>
+	<meta charset="utf-8">
+	<meta property="og:title" content="Дома Москвы"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:url" content="http://dom.mithron.me"/>
+    <meta property="og:image" content="http://dom.mithron.me/cover.png"/>
+    <meta property="og:site_name" content="Дома Москвы"/>
+    <meta property="og:description"
+         content="Сколько этажей у домов Москвы?"/>
+
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+	<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+	
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.min.js"></script>	
+   
+	<script src="leaflet-sidebar/src/L.Control.Sidebar.js"></script>
+	<link rel="stylesheet" href="leaflet-sidebar/src/L.Control.Sidebar.css" />
+	
+	<link rel="stylesheet" href="Leaflet.loading/src/Control.Loading.css" />
+    <script src="Leaflet.loading/src/Control.Loading.js"></script>
+	
+    <script src="Leaflet.heat/dist/leaflet-heat.js"></script>
+		
+	<script src="/spin/spin.min.js"></script>
+	
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+	
+</head>
+<body>
+	
+	<script src="flourlatlngs.min.js"></script>
+    
+	<div id="sidebar">
+	</div>
+	
+	<div id="map"></div>
+	
+	<script>
+	var map;	
+	
+	var resize = function () {
+		var $map = $('#map');
+
+		$map.height($(window).height() - $('div.navbar').outerHeight());
+
+		if (map) {
+			map.invalidateSize();
+		}
+	};
+
+	$(window).on('resize', function () {
+		resize();
+	});
+
+	resize();
+
+	map = L.map('map', {minZoom: 10}).setView([55.75, 37.63], 10);
+	
+	var control = L.control.layers([], [], {collapsed: false}).addTo(map);
+	
+	var osmTiles = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+				attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+				});
+	
+	control.addBaseLayer(osmTiles, 'OpenStreetMap Buildings');
+	var stamenLayer = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.png', {
+  attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.'
+});
+		control.addBaseLayer(stamenLayer, 'OpenStreetMap Toner');
+	var cartoDBLayer = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',{
+  attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
+}).addTo(map);
+	control.addBaseLayer(cartoDBLayer, 'OpenStreetMap Light');
+	/* var sidebar = L.control.sidebar('sidebar', {
+            closeButton: true,
+            position: 'left'
+       });
+    map.addControl(sidebar);
+    
+	setTimeout(function () {
+            sidebar.show();
+        }, 500);	
+	*/
+	
+	// max=60 -> 1 = 002, 5= 008, 7= 0.12 12= 0.2, 14 = 0.24, 22=0.36
+	
+	var heat = L.heatLayer(flourlatlngs, {minOpacity: .8, radius: 3, gradient: { 0.02: 'blue', 0.08: 'cyan', 0.12: 'lime', 0.2: 'yellow', 0.24: 'red'} }).addTo(map);	
+	
+	/* map.on('zoomend', function(e) {		
+		heat.setOptions({radius: 3+(e.target._zoom-10)});
+		console.log(heat.options);
+	}); */
+	</script>	
+</body></html>
